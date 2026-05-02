@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Application Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf7f2;
+    --bg-soft: #f3eee5;
+    --text: #1a1a1a;
+    --text-soft: #5a5a5a;
+    --text-faint: #8a8a8a;
+    --accent: #c2410c;
+    --accent-soft: #fed7aa;
+    --accent-hover: #9a3412;
+    --border: #e5ddd0;
+    --border-soft: #efe9dc;
+    --card: #ffffff;
+    --shadow: 0 1px 2px rgba(20, 14, 0, 0.04), 0 1px 3px rgba(20, 14, 0, 0.02);
+    --shadow-lg: 0 8px 24px rgba(20, 14, 0, 0.08);
+    --radius: 6px;
+    --radius-lg: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15.5px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .serif {
+    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+  }
+
+  .mono, code {
+    font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+    font-size: 0.86em;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  h1 { font-size: 2.4rem; font-weight: 600; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.15rem; font-weight: 600; }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: inherit;
+  }
+
+  textarea, input {
+    font: inherit;
+    color: inherit;
+  }
+
+  /* Layout */
+  .app {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  header.top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 48px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  header.top .branding h1 {
+    font-style: italic;
+  }
+
+  header.top .branding .subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 6px;
+  }
+
+  nav.toolbar {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  nav.toolbar button {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text-soft);
+    padding: 6px 10px;
+    border-radius: var(--radius);
+    transition: all 0.15s;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  nav.toolbar button:hover {
+    background: var(--bg-soft);
+    color: var(--text);
+  }
+
+  /* Input section */
+  .input-section {
+    margin-bottom: 40px;
+  }
+
+  .input-section .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  textarea#jd {
+    width: 100%;
+    min-height: 220px;
+    padding: 18px 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-shadow: var(--shadow);
+  }
+
+  textarea#jd:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.1);
+  }
+
+  textarea#jd::placeholder {
+    color: var(--text-faint);
+  }
+
+  /* Output checkboxes */
+  .outputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px;
+    margin: 20px 0 24px;
+  }
+
+  .check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .check:hover {
+    border-color: var(--accent);
+    background: #fff;
+  }
+
+  .check input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+
+  .check input[type="checkbox"]:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .check input[type="checkbox"]:checked::after {
+    content: "✓";
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1;
+  }
+
+  .check span {
+    font-size: 14px;
+  }
+
+  /* Analyze button */
+  .analyze-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  button.primary {
+    background: var(--text);
+    color: var(--bg);
+    padding: 12px 24px;
+    border-radius: var(--radius);
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  button.primary:hover:not(:disabled) {
+    background: var(--accent);
+  }
+
+  button.primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .shortcut-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-faint);
+  }
+
+  .shortcut-hint kbd {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 6px;
+    font-size: 0.85em;
+  }
+
+  /* Output section */
+  .output-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border-soft);
+    cursor: pointer;
+    user-select: none;
+    background: var(--card);
+    gap: 16px;
+  }
+
+  .card-header:hover {
+    background: var(--bg-soft);
+  }
+
+  .card-header.no-collapse {
+    cursor: default;
+  }
+
+  .card-header.no-collapse:hover {
+    background: var(--card);
+  }
+
+  .card-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .card-title .chevron {
+    color: var(--text-faint);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+
+  .card.collapsed .chevron {
+    transform: rotate(-90deg);
+  }
+
+  .card-title h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  .card-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .card-actions button {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-soft);
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: all 0.15s;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .card-actions button:hover {
+    background: var(--bg-soft);
+    color: var(--text);
+  }
+
+  .card-actions button.copied {
+    color: var(--accent);
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+
+  .card.collapsed .card-body {
+    display: none;
+  }
+
+  .card-body pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: 'Inter', sans-serif;
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--text);
+  }
+
+  .card-body .streaming {
+    color: var(--text);
+  }
+
+  .card-body .streaming::after {
+    content: "▊";
+    color: var(--accent);
+    animation: blink 1s infinite;
+  }
+
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  /* Analysis card */
+  .analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+  }
+
+  .analysis-item .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  .analysis-item .value {
+    font-size: 14.5px;
+  }
+
+  .analysis-item ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .analysis-item ul li {
+    padding: 3px 0;
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  .analysis-item ul li::before {
+    content: "·";
+    color: var(--accent);
+    margin-right: 8px;
+    font-weight: bold;
+  }
+
+  .company-row {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-bottom: 16px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .company-row .company {
+    font-family: 'Fraunces', serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+  }
+
+  .company-row .role {
+    color: var(--text-soft);
+    font-size: 1rem;
+  }
+
+  .company-row .tone-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    background: var(--accent-soft);
+    color: var(--accent-hover);
+    padding: 3px 10px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-left: auto;
+  }
+
+  /* Loading state */
+  .loading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-soft);
+    font-size: 14px;
+    padding: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+
+  .spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .error-banner {
+    padding: 14px 18px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: var(--radius);
+    color: #991b1b;
+    font-size: 14px;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 14, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+    backdrop-filter: blur(2px);
+  }
+
+  .modal {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 640px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-soft);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-header h2 {
+    font-style: italic;
+  }
+
+  .modal-close {
+    font-size: 22px;
+    color: var(--text-faint);
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    transition: all 0.15s;
+  }
+
+  .modal-close:hover {
+    background: var(--bg-soft);
+    color: var(--text);
+  }
+
+  .modal-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-soft);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    background: var(--bg-soft);
+  }
+
+  button.secondary {
+    background: var(--card);
+    color: var(--text);
+    padding: 10px 18px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    font-size: 14px;
+    transition: all 0.15s;
+  }
+
+  button.secondary:hover {
+    border-color: var(--text);
+  }
+
+  /* Form fields */
+  .field {
+    margin-bottom: 20px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+
+  .field .hint {
+    font-size: 12.5px;
+    color: var(--text-soft);
+    margin-bottom: 8px;
+  }
+
+  .field input[type="text"],
+  .field input[type="password"],
+  .field textarea {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 14px;
+    line-height: 1.5;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .field textarea.mono-field {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+
+  .field input:focus,
+  .field textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(194, 65, 12, 0.1);
+  }
+
+  /* History list */
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .history-item {
+    padding: 14px 16px;
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .history-item:hover {
+    border-color: var(--accent);
+    background: var(--bg-soft);
+  }
+
+  .history-item .info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .history-item .company-name {
+    font-weight: 500;
+    font-size: 14.5px;
+    margin-bottom: 2px;
+  }
+
+  .history-item .role-name {
+    font-size: 13px;
+    color: var(--text-soft);
+  }
+
+  .history-item .date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+
+  .history-item .delete-btn {
+    color: var(--text-faint);
+    padding: 4px 8px;
+    font-size: 14px;
+    border-radius: 3px;
+    transition: all 0.15s;
+  }
+
+  .history-item .delete-btn:hover {
+    color: #dc2626;
+    background: #fef2f2;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-faint);
+    font-style: italic;
+  }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    .app { padding: 20px 16px 60px; }
+    h1 { font-size: 1.8rem; }
+    header.top {
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 32px;
+    }
+    nav.toolbar {
+      width: 100%;
+      justify-content: flex-start;
+    }
+    .outputs { grid-template-columns: 1fr; }
+    .analysis-grid { grid-template-columns: 1fr; }
+    .modal { max-height: 95vh; }
+    .modal-body { padding: 18px; }
+  }
+
+  /* Hide elements */
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="top">
+    <div class="branding">
+      <h1 class="serif">Job Application Assistant</h1>
+      <div class="subtitle">Tailored materials in under 30 seconds</div>
+    </div>
+    <nav class="toolbar">
+      <button id="btn-profile">Profile</button>
+      <button id="btn-apikey">API Key</button>
+      <button id="btn-history">History</button>
+    </nav>
+  </header>
+
+  <section class="input-section">
+    <label class="label" for="jd">Job description or LinkedIn URL</label>
+    <textarea id="jd" placeholder="Paste a full job description here. Press Cmd/Ctrl+Enter to analyze."></textarea>
+
+    <div class="outputs" id="outputs">
+      <label class="check">
+        <input type="checkbox" data-output="resume" checked>
+        <span>Tailored Resume</span>
+      </label>
+      <label class="check">
+        <input type="checkbox" data-output="cover" checked>
+        <span>Cover Letter</span>
+      </label>
+      <label class="check">
+        <input type="checkbox" data-output="dm">
+        <span>LinkedIn DM</span>
+      </label>
+      <label class="check">
+        <input type="checkbox" data-output="email">
+        <span>Cold Email</span>
+      </label>
+    </div>
+
+    <div class="analyze-row">
+      <button id="btn-analyze" class="primary">Analyze</button>
+      <span class="shortcut-hint"><kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>↵</kbd> to run</span>
+    </div>
+  </section>
+
+  <section class="output-section" id="output-section"></section>
+</div>
+
+<div id="modal-root"></div>
+
+<script type="module">
+import Anthropic from 'https://esm.sh/@anthropic-ai/sdk@0.92.0';
+
+/* ============================================================
+   STATE & STORAGE
+   ============================================================ */
+
+const KEYS = {
+  profile: 'jaa_profile',
+  apiKey: 'jaa_apikey',
+  history: 'jaa_history',
+  prompts: 'jaa_prompts',
+  outputs: 'jaa_outputs',
+};
+
+const MODEL = 'claude-opus-4-5';
+
+const store = {
+  get(k, fallback = null) {
+    try {
+      const v = localStorage.getItem(k);
+      return v === null ? fallback : JSON.parse(v);
+    } catch { return fallback; }
+  },
+  set(k, v) { localStorage.setItem(k, JSON.stringify(v)); },
+  remove(k) { localStorage.removeItem(k); },
+};
+
+/* ============================================================
+   PROMPT TEMPLATES
+   ============================================================ */
+
+const ANALYZE_TOOL = {
+  name: 'extract_jd_analysis',
+  description: 'Extract structured information from a job description',
+  input_schema: {
+    type: 'object',
+    properties: {
+      company: { type: 'string', description: 'Company name' },
+      role: { type: 'string', description: 'Job title' },
+      must_have_skills: {
+        type: 'array',
+        items: { type: 'string' },
+        description: 'Required skills, technologies, or experience'
+      },
+      nice_to_haves: {
+        type: 'array',
+        items: { type: 'string' },
+        description: 'Preferred but not required qualifications'
+      },
+      key_responsibilities: {
+        type: 'array',
+        items: { type: 'string' },
+        description: 'Main duties and ownership areas'
+      },
+      tone: {
+        type: 'string',
+        description: 'Tone of the posting: e.g., formal, startup-casual, technical, mission-driven, corporate'
+      },
+      pain_points: {
+        type: 'array',
+        items: { type: 'string' },
+        description: '3 likely pain points or business problems this role is being hired to solve'
+      },
+    },
+    required: ['company', 'role', 'must_have_skills', 'nice_to_haves', 'key_responsibilities', 'tone', 'pain_points']
+  }
+};
+
+const DEFAULT_PROMPTS = {
+  resume: `You are tailoring the candidate's resume bullets for this specific role.
+
+Rules:
+- Rewrite bullets to mirror language and keywords from the JD
+- Prioritize the most relevant experience FIRST — reorder freely
+- NEVER invent facts, metrics, or experience that aren't in the master profile
+- Keep bullets concise, impact-focused, and start with strong verbs
+- Quantify outcomes wherever the master profile provides numbers
+- Match the JD's level of formality
+
+Output the tailored resume in clean markdown. Use the candidate's name and contact info as a header. Group experience by role with company, title, and dates. Use bullet points for accomplishments. Include a brief skills summary that maps to the JD's must-haves.`,
+
+  cover: `You are writing a cover letter for the candidate to apply to this role.
+
+Strict requirements:
+- Exactly 3 short paragraphs (each 2-4 sentences)
+- Paragraph 1: Open with a SPECIFIC reason for interest in THIS company — reference something concrete (a product, recent news, mission, technical decision). Do not use generic openers like "I am writing to apply" or "I am excited about the opportunity."
+- Paragraph 2: Tie 2 of the candidate's specific accomplishments from the master profile directly to the company's needs (use the pain_points from the analysis). Be concrete and quantitative where possible.
+- Paragraph 3: Soft CTA. NOT "I look forward to hearing from you." Instead something like "Happy to share more about how I'd approach [specific challenge]" or a direct ask for a conversation.
+- Match the JD's tone (formal vs casual)
+- Use the candidate's voice/style sample as a guide for sentence rhythm and vocabulary
+- Plain text output, no greeting/closing salutations needed (just the body)`,
+
+  dm: `You are writing a LinkedIn outreach DM from the candidate to someone at the company (recruiter, hiring manager, or future teammate).
+
+Strict requirements:
+- UNDER 300 characters total (count carefully)
+- Warm but not sycophantic — no "I'm a huge fan" or "love what you're building"
+- Reference something specific from the role or company (1 detail)
+- End with ONE specific question that invites a real reply
+- Use the candidate's voice — natural, conversational
+- No links, no resume attachments mentioned
+
+Output ONLY the message text, nothing else.`,
+
+  email: `You are writing a cold email from the candidate to a recruiter or hiring manager.
+
+Strict requirements:
+- First line: "Subject: [your subject line]" — make it specific and intriguing, not "Application for [role]"
+- Blank line, then body
+- Body opens by referencing something specific about the company (a recent launch, a public initiative, a technical choice — use the pain_points or company context)
+- Brief context: 1-2 sentences on why the candidate is relevant (pull from accomplishments)
+- Asks for 15 minutes specifically (not "to chat" or "to connect")
+- Sign off with the candidate's name only
+- Use the candidate's voice
+- Keep total length under 150 words`
+};
+
+const ARTIFACT_LABELS = {
+  resume: 'Tailored Resume',
+  cover: 'Cover Letter',
+  dm: 'LinkedIn DM',
+  email: 'Cold Email',
+};
+
+const ARTIFACT_LOADING = {
+  resume: 'Tailoring resume...',
+  cover: 'Drafting cover letter...',
+  dm: 'Writing LinkedIn DM...',
+  email: 'Composing cold email...',
+};
+
+function getPrompts() {
+  const overrides = store.get(KEYS.prompts, {});
+  return { ...DEFAULT_PROMPTS, ...overrides };
+}
+
+function setPrompt(type, value) {
+  const overrides = store.get(KEYS.prompts, {});
+  overrides[type] = value;
+  store.set(KEYS.prompts, overrides);
+}
+
+function resetPrompt(type) {
+  const overrides = store.get(KEYS.prompts, {});
+  delete overrides[type];
+  store.set(KEYS.prompts, overrides);
+}
+
+/* ============================================================
+   ANTHROPIC CLIENT
+   ============================================================ */
+
+let anthropicClient = null;
+
+function getClient() {
+  const key = store.get(KEYS.apiKey);
+  if (!key) return null;
+  if (!anthropicClient || anthropicClient._apiKey !== key) {
+    anthropicClient = new Anthropic({
+      apiKey: key,
+      dangerouslyAllowBrowser: true,
+    });
+    anthropicClient._apiKey = key;
+  }
+  return anthropicClient;
+}
+
+/* ============================================================
+   ANALYZE & GENERATE
+   ============================================================ */
+
+function buildContextBlock(profile) {
+  return `<candidate_master_profile>
+<resume>
+${profile.resume || ''}
+</resume>
+
+<key_accomplishments>
+${profile.accomplishments || ''}
+</key_accomplishments>
+
+<links>
+${profile.links || ''}
+</links>
+
+<voice_sample>
+${profile.voice || ''}
+</voice_sample>
+</candidate_master_profile>`;
+}
+
+async function analyzeJD(jdText) {
+  const client = getClient();
+  if (!client) throw new Error('No API key configured');
+
+  const message = await client.messages.create({
+    model: MODEL,
+    max_tokens: 2048,
+    tools: [ANALYZE_TOOL],
+    tool_choice: { type: 'tool', name: 'extract_jd_analysis' },
+    messages: [{
+      role: 'user',
+      content: `Analyze this job description and extract structured information. Identify the company name, role, required and preferred skills, key responsibilities, the tone of the posting, and 3 likely pain points the role is being hired to solve.
+
+<job_description>
+${jdText}
+</job_description>`
+    }]
+  });
+
+  const toolUse = message.content.find(b => b.type === 'tool_use');
+  if (!toolUse) throw new Error('Analysis failed: no structured output returned');
+  return toolUse.input;
+}
+
+async function generateArtifact(type, profile, analysis, jdText, onText) {
+  const client = getClient();
+  if (!client) throw new Error('No API key configured');
+
+  const prompts = getPrompts();
+  const systemPrompt = prompts[type];
+
+  const userContent = `${buildContextBlock(profile)}
+
+<job_description>
+${jdText}
+</job_description>
+
+<jd_analysis>
+${JSON.stringify(analysis, null, 2)}
+</jd_analysis>
+
+Now produce the ${ARTIFACT_LABELS[type]} following the instructions in the system prompt.`;
+
+  const stream = client.messages.stream({
+    model: MODEL,
+    max_tokens: type === 'dm' ? 512 : 2048,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: userContent }]
+  });
+
+  stream.on('text', (delta) => {
+    onText(delta);
+  });
+
+  const final = await stream.finalMessage();
+  const text = final.content
+    .filter(b => b.type === 'text')
+    .map(b => b.text)
+    .join('');
+  return text;
+}
+
+/* ============================================================
+   UI: MODALS
+   ============================================================ */
+
+const modalRoot = document.getElementById('modal-root');
+
+function openModal({ title, body, footer, onClose }) {
+  closeModal();
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="serif">${title}</h2>
+        <button class="modal-close" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer"></div>
+    </div>
+  `;
+  const bodyEl = overlay.querySelector('.modal-body');
+  const footerEl = overlay.querySelector('.modal-footer');
+  if (typeof body === 'string') bodyEl.innerHTML = body;
+  else bodyEl.appendChild(body);
+  if (footer) footerEl.appendChild(footer);
+  else footerEl.style.display = 'none';
+
+  overlay.querySelector('.modal-close').addEventListener('click', () => {
+    closeModal();
+    onClose?.();
+  });
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      closeModal();
+      onClose?.();
+    }
+  });
+
+  modalRoot.appendChild(overlay);
+  return overlay;
+}
+
+function closeModal() {
+  modalRoot.innerHTML = '';
+}
+
+/* ============================================================
+   UI: PROFILE SETUP
+   ============================================================ */
+
+function showProfileModal(isFirstTime = false) {
+  const profile = store.get(KEYS.profile, { resume: '', accomplishments: '', links: '', voice: '' });
+
+  const form = document.createElement('div');
+  form.innerHTML = `
+    ${isFirstTime ? `<p style="margin-bottom:20px;color:var(--text-soft);font-size:14px;">Welcome. Set up your master profile once — it's used for every job from here on. Stored locally in your browser.</p>` : ''}
+    <div class="field">
+      <label>Resume (full text)</label>
+      <div class="hint">Paste your full resume. Used as the source of truth for tailoring — facts, dates, metrics will not be invented beyond what's here.</div>
+      <textarea data-field="resume" rows="10" class="mono-field"></textarea>
+    </div>
+    <div class="field">
+      <label>Key accomplishments</label>
+      <div class="hint">3-7 bullet points. Specific, quantified wins that you'll want to surface in cover letters and emails.</div>
+      <textarea data-field="accomplishments" rows="6"></textarea>
+    </div>
+    <div class="field">
+      <label>Links</label>
+      <div class="hint">LinkedIn, portfolio, GitHub, personal site — one per line.</div>
+      <textarea data-field="links" rows="4" class="mono-field"></textarea>
+    </div>
+    <div class="field">
+      <label>Voice / tone sample</label>
+      <div class="hint">A paragraph or two of your own writing — a blog post intro, an email you've sent, an "About me." Used so the generated text sounds like you.</div>
+      <textarea data-field="voice" rows="5"></textarea>
+    </div>
+  `;
+
+  form.querySelectorAll('[data-field]').forEach(el => {
+    el.value = profile[el.dataset.field] || '';
+  });
+
+  const footer = document.createElement('div');
+  footer.style.display = 'flex';
+  footer.style.gap = '10px';
+  footer.style.marginLeft = 'auto';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'secondary';
+  cancelBtn.textContent = isFirstTime ? 'Skip for now' : 'Cancel';
+  cancelBtn.addEventListener('click', () => {
+    closeModal();
+    if (isFirstTime) maybePromptApiKey();
+  });
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'primary';
+  saveBtn.textContent = 'Save profile';
+  saveBtn.addEventListener('click', () => {
+    const next = {};
+    form.querySelectorAll('[data-field]').forEach(el => {
+      next[el.dataset.field] = el.value.trim();
+    });
+    store.set(KEYS.profile, next);
+    closeModal();
+    if (isFirstTime) maybePromptApiKey();
+  });
+
+  footer.appendChild(cancelBtn);
+  footer.appendChild(saveBtn);
+
+  openModal({
+    title: isFirstTime ? 'Set up your master profile' : 'Master profile',
+    body: form,
+    footer,
+  });
+}
+
+/* ============================================================
+   UI: API KEY
+   ============================================================ */
+
+function showApiKeyModal(isFirstTime = false) {
+  const current = store.get(KEYS.apiKey, '');
+
+  const form = document.createElement('div');
+  form.innerHTML = `
+    ${isFirstTime ? `<p style="margin-bottom:20px;color:var(--text-soft);font-size:14px;">Add your Anthropic API key. Stored locally in your browser only — never sent anywhere except directly to Anthropic's API.</p>` : ''}
+    <div class="field">
+      <label>Anthropic API key</label>
+      <div class="hint">Get one at console.anthropic.com. Begins with <code>sk-ant-</code>.</div>
+      <input type="password" id="apikey-input" placeholder="sk-ant-..." autocomplete="off" spellcheck="false" value="${current.replace(/"/g, '&quot;')}">
+    </div>
+    <div class="field">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <input type="checkbox" id="show-key">
+        <span style="font-weight:400;font-size:13px;color:var(--text-soft);">Show key</span>
+      </label>
+    </div>
+  `;
+
+  const input = form.querySelector('#apikey-input');
+  form.querySelector('#show-key').addEventListener('change', (e) => {
+    input.type = e.target.checked ? 'text' : 'password';
+  });
+
+  const footer = document.createElement('div');
+  footer.style.display = 'flex';
+  footer.style.gap = '10px';
+  footer.style.marginLeft = 'auto';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'secondary';
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.addEventListener('click', closeModal);
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'primary';
+  saveBtn.textContent = 'Save key';
+  saveBtn.addEventListener('click', () => {
+    const val = input.value.trim();
+    if (!val) {
+      store.remove(KEYS.apiKey);
+    } else {
+      store.set(KEYS.apiKey, val);
+    }
+    anthropicClient = null;
+    closeModal();
+  });
+
+  footer.appendChild(cancelBtn);
+  footer.appendChild(saveBtn);
+
+  openModal({ title: 'API key', body: form, footer });
+  setTimeout(() => input.focus(), 50);
+}
+
+/* ============================================================
+   UI: HISTORY
+   ============================================================ */
+
+function showHistoryModal() {
+  const history = store.get(KEYS.history, []);
+
+  const body = document.createElement('div');
+
+  if (history.length === 0) {
+    body.innerHTML = `<div class="empty-state">No analyzed jobs yet.</div>`;
+  } else {
+    body.innerHTML = `<div class="history-list"></div>`;
+    const list = body.querySelector('.history-list');
+    history.slice().reverse().forEach(job => {
+      const item = document.createElement('div');
+      item.className = 'history-item';
+      const date = new Date(job.date);
+      const dateStr = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+      item.innerHTML = `
+        <div class="info">
+          <div class="company-name">${escapeHtml(job.company || 'Unknown company')}</div>
+          <div class="role-name">${escapeHtml(job.role || 'Unknown role')}</div>
+        </div>
+        <span class="date">${dateStr}</span>
+        <button class="delete-btn" title="Delete">×</button>
+      `;
+      item.querySelector('.info').addEventListener('click', () => {
+        closeModal();
+        loadJobFromHistory(job.id);
+      });
+      item.querySelector('.delete-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        deleteHistoryItem(job.id);
+        showHistoryModal();
+      });
+      list.appendChild(item);
+    });
+  }
+
+  openModal({ title: 'History', body });
+}
+
+function loadJobFromHistory(id) {
+  const history = store.get(KEYS.history, []);
+  const job = history.find(j => j.id === id);
+  if (!job) return;
+
+  document.getElementById('jd').value = job.jd || '';
+  state.jdText = job.jd || '';
+  state.analysis = job.analysis || null;
+  state.artifacts = job.artifacts || {};
+  state.currentJobId = id;
+  renderOutputs();
+}
+
+function deleteHistoryItem(id) {
+  const history = store.get(KEYS.history, []);
+  store.set(KEYS.history, history.filter(j => j.id !== id));
+}
+
+function saveCurrentJob() {
+  if (!state.analysis) return;
+  const history = store.get(KEYS.history, []);
+  const idx = history.findIndex(j => j.id === state.currentJobId);
+
+  const job = {
+    id: state.currentJobId || ('job_' + Date.now()),
+    date: state.currentJobId ? (history[idx]?.date || Date.now()) : Date.now(),
+    company: state.analysis.company,
+    role: state.analysis.role,
+    jd: state.jdText,
+    analysis: state.analysis,
+    artifacts: state.artifacts,
+  };
+
+  if (idx >= 0) {
+    history[idx] = job;
+  } else {
+    history.push(job);
+  }
+  store.set(KEYS.history, history);
+  state.currentJobId = job.id;
+}
+
+/* ============================================================
+   UI: EDIT PROMPT
+   ============================================================ */
+
+function showEditPromptModal(type) {
+  const prompts = getPrompts();
+  const current = prompts[type];
+  const isOverride = !!store.get(KEYS.prompts, {})[type];
+
+  const form = document.createElement('div');
+  form.innerHTML = `
+    <p style="margin-bottom:16px;color:var(--text-soft);font-size:13.5px;">
+      Edit the system prompt for <strong>${ARTIFACT_LABELS[type]}</strong>. Saved changes apply to future generations.
+      ${isOverride ? '<br><span class="mono" style="color:var(--accent);">Currently using your custom version.</span>' : ''}
+    </p>
+    <div class="field">
+      <textarea id="prompt-edit" rows="18" class="mono-field"></textarea>
+    </div>
+  `;
+  form.querySelector('#prompt-edit').value = current;
+
+  const footer = document.createElement('div');
+  footer.style.display = 'flex';
+  footer.style.gap = '10px';
+  footer.style.width = '100%';
+
+  const resetBtn = document.createElement('button');
+  resetBtn.className = 'secondary';
+  resetBtn.textContent = 'Reset to default';
+  resetBtn.style.marginRight = 'auto';
+  resetBtn.disabled = !isOverride;
+  if (!isOverride) resetBtn.style.opacity = '0.5';
+  resetBtn.addEventListener('click', () => {
+    resetPrompt(type);
+    closeModal();
+    regenerateArtifact(type);
+  });
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'secondary';
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.addEventListener('click', closeModal);
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'primary';
+  saveBtn.textContent = 'Save & regenerate';
+  saveBtn.addEventListener('click', () => {
+    const newPrompt = form.querySelector('#prompt-edit').value.trim();
+    if (newPrompt) setPrompt(type, newPrompt);
+    closeModal();
+    regenerateArtifact(type);
+  });
+
+  footer.appendChild(resetBtn);
+  footer.appendChild(cancelBtn);
+  footer.appendChild(saveBtn);
+
+  openModal({
+    title: `Edit ${ARTIFACT_LABELS[type]} prompt`,
+    body: form,
+    footer
+  });
+}
+
+/* ============================================================
+   STATE
+   ============================================================ */
+
+const state = {
+  jdText: '',
+  analysis: null,
+  artifacts: {},      // { resume: 'text...', cover: 'text...', ... }
+  loading: {},        // { resume: true, ... }
+  errors: {},         // { resume: 'error msg', ... }
+  collapsed: {},      // { resume: false, ... }
+  currentJobId: null,
+};
+
+/* ============================================================
+   RENDERING
+   ============================================================ */
+
+const outputSection = document.getElementById('output-section');
+
+function renderOutputs() {
+  outputSection.innerHTML = '';
+
+  if (state.analysis) {
+    outputSection.appendChild(renderAnalysisCard());
+  } else if (state.loading.analysis) {
+    outputSection.appendChild(renderLoading('Analyzing job description...'));
+  } else if (state.errors.analysis) {
+    outputSection.appendChild(renderError(state.errors.analysis));
+  }
+
+  for (const type of ['resume', 'cover', 'dm', 'email']) {
+    if (state.artifacts[type] !== undefined || state.loading[type] || state.errors[type]) {
+      outputSection.appendChild(renderArtifactCard(type));
+    }
+  }
+}
+
+function renderLoading(text) {
+  const el = document.createElement('div');
+  el.className = 'loading';
+  el.innerHTML = `<div class="spinner"></div><span>${escapeHtml(text)}</span>`;
+  return el;
+}
+
+function renderError(text) {
+  const el = document.createElement('div');
+  el.className = 'error-banner';
+  el.textContent = text;
+  return el;
+}
+
+function renderAnalysisCard() {
+  const a = state.analysis;
+  const card = document.createElement('div');
+  card.className = 'card' + (state.collapsed.analysis ? ' collapsed' : '');
+
+  card.innerHTML = `
+    <div class="card-header" data-toggle="analysis">
+      <div class="card-title">
+        <svg class="chevron" width="12" height="12" viewBox="0 0 12 12"><path d="M3 4.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+        <h3 class="serif">Analysis</h3>
+      </div>
+      <span class="card-meta">${escapeHtml(a.tone || '')}</span>
+    </div>
+    <div class="card-body">
+      <div class="company-row">
+        <div class="company serif">${escapeHtml(a.company || '')}</div>
+        <div class="role">${escapeHtml(a.role || '')}</div>
+      </div>
+      <div class="analysis-grid">
+        <div class="analysis-item">
+          <div class="label">Must-have skills</div>
+          <ul>${(a.must_have_skills || []).map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>
+        </div>
+        <div class="analysis-item">
+          <div class="label">Nice-to-haves</div>
+          <ul>${(a.nice_to_haves || []).map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>
+        </div>
+        <div class="analysis-item">
+          <div class="label">Key responsibilities</div>
+          <ul>${(a.key_responsibilities || []).map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>
+        </div>
+        <div class="analysis-item">
+          <div class="label">Likely pain points</div>
+          <ul>${(a.pain_points || []).map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>
+        </div>
+      </div>
+    </div>
+  `;
+
+  card.querySelector('.card-header').addEventListener('click', () => {
+    state.collapsed.analysis = !state.collapsed.analysis;
+    renderOutputs();
+  });
+
+  return card;
+}
+
+function renderArtifactCard(type) {
+  const card = document.createElement('div');
+  const isLoading = state.loading[type];
+  const error = state.errors[type];
+  const text = state.artifacts[type];
+
+  card.className = 'card' + (state.collapsed[type] ? ' collapsed' : '');
+
+  let bodyHtml = '';
+  if (error) {
+    bodyHtml = `<div class="error-banner">${escapeHtml(error)}</div>`;
+  } else if (isLoading && !text) {
+    bodyHtml = `<div class="loading"><div class="spinner"></div><span>${escapeHtml(ARTIFACT_LOADING[type])}</span></div>`;
+  } else if (text !== undefined) {
+    const isStreaming = isLoading;
+    bodyHtml = `<pre class="${isStreaming ? 'streaming' : ''}" data-content>${escapeHtml(text)}</pre>`;
+  }
+
+  card.innerHTML = `
+    <div class="card-header" data-toggle="${type}">
+      <div class="card-title">
+        <svg class="chevron" width="12" height="12" viewBox="0 0 12 12"><path d="M3 4.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+        <h3 class="serif">${ARTIFACT_LABELS[type]}</h3>
+      </div>
+      <div class="card-actions">
+        <button data-action="copy" data-type="${type}" ${(!text || isLoading) ? 'disabled' : ''}>Copy</button>
+        <button data-action="regen" data-type="${type}" ${isLoading ? 'disabled' : ''}>Regenerate</button>
+        <button data-action="edit" data-type="${type}">Edit prompt</button>
+      </div>
+    </div>
+    <div class="card-body">${bodyHtml}</div>
+  `;
+
+  card.querySelector('.card-header').addEventListener('click', (e) => {
+    if (e.target.closest('.card-actions')) return;
+    state.collapsed[type] = !state.collapsed[type];
+    renderOutputs();
+  });
+
+  card.querySelectorAll('.card-actions button').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const action = btn.dataset.action;
+      if (action === 'copy') copyArtifact(type, btn);
+      else if (action === 'regen') regenerateArtifact(type);
+      else if (action === 'edit') showEditPromptModal(type);
+    });
+  });
+
+  return card;
+}
+
+async function copyArtifact(type, btn) {
+  const text = state.artifacts[type];
+  if (!text) return;
+  try {
+    await navigator.clipboard.writeText(text);
+    const originalText = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = originalText;
+      btn.classList.remove('copied');
+    }, 1500);
+  } catch (err) {
+    console.error('Copy failed', err);
+  }
+}
+
+/* ============================================================
+   FLOWS: ANALYZE & GENERATE
+   ============================================================ */
+
+async function runAnalyze() {
+  const jd = document.getElementById('jd').value.trim();
+  if (!jd) return;
+
+  const profile = store.get(KEYS.profile);
+  if (!profile || !profile.resume) {
+    showProfileModal(true);
+    return;
+  }
+
+  const apiKey = store.get(KEYS.apiKey);
+  if (!apiKey) {
+    showApiKeyModal(true);
+    return;
+  }
+
+  if (looksLikeBareUrl(jd)) {
+    state.errors.analysis = 'Browser-based scraping is blocked by LinkedIn and most job sites. Please paste the full job description text instead of a URL.';
+    state.analysis = null;
+    state.artifacts = {};
+    renderOutputs();
+    return;
+  }
+
+  const checkedTypes = Array.from(document.querySelectorAll('#outputs input:checked'))
+    .map(c => c.dataset.output);
+
+  if (checkedTypes.length === 0) {
+    state.errors.analysis = 'Select at least one output type below.';
+    renderOutputs();
+    return;
+  }
+
+  state.jdText = jd;
+  state.analysis = null;
+  state.artifacts = {};
+  state.loading = { analysis: true };
+  state.errors = {};
+  state.collapsed = {};
+  state.currentJobId = null;
+  renderOutputs();
+  setAnalyzing(true);
+
+  try {
+    const analysis = await analyzeJD(jd);
+    state.analysis = analysis;
+    state.loading.analysis = false;
+    renderOutputs();
+
+    saveCurrentJob();
+
+    const generations = checkedTypes.map(type => generateOne(type, profile));
+    await Promise.all(generations);
+
+    saveCurrentJob();
+  } catch (err) {
+    console.error(err);
+    state.loading.analysis = false;
+    state.errors.analysis = formatError(err);
+    renderOutputs();
+  } finally {
+    setAnalyzing(false);
+  }
+}
+
+async function generateOne(type, profile) {
+  state.loading[type] = true;
+  state.errors[type] = '';
+  state.artifacts[type] = '';
+  renderOutputs();
+
+  try {
+    let buffered = '';
+    const text = await generateArtifact(type, profile, state.analysis, state.jdText, (delta) => {
+      buffered += delta;
+      state.artifacts[type] = buffered;
+      const el = outputSection.querySelector(`[data-toggle="${type}"]`)?.parentElement?.querySelector('[data-content]');
+      if (el) {
+        el.textContent = buffered;
+      } else {
+        renderOutputs();
+      }
+    });
+    state.artifacts[type] = text;
+    state.loading[type] = false;
+    renderOutputs();
+  } catch (err) {
+    console.error(err);
+    state.loading[type] = false;
+    state.errors[type] = formatError(err);
+    renderOutputs();
+  }
+}
+
+async function regenerateArtifact(type) {
+  if (!state.analysis) return;
+  if (state.loading[type]) return;
+  const profile = store.get(KEYS.profile);
+  if (!profile) return;
+  await generateOne(type, profile);
+  saveCurrentJob();
+}
+
+function setAnalyzing(isAnalyzing) {
+  const btn = document.getElementById('btn-analyze');
+  if (isAnalyzing) {
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner" style="width:12px;height:12px;border-width:1.5px;"></div><span>Analyzing...</span>';
+  } else {
+    btn.disabled = false;
+    btn.textContent = 'Analyze';
+  }
+}
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function looksLikeBareUrl(s) {
+  const trimmed = s.trim();
+  return /^https?:\/\/\S+$/i.test(trimmed) && !trimmed.includes('\n') && trimmed.length < 500;
+}
+
+function formatError(err) {
+  const msg = err?.message || String(err);
+  if (msg.includes('401') || msg.toLowerCase().includes('authentication')) {
+    return 'API key invalid or rejected. Check your key in the API Key panel.';
+  }
+  if (msg.includes('429')) {
+    return 'Rate limited. Wait a moment and try again.';
+  }
+  if (msg.toLowerCase().includes('overloaded')) {
+    return 'API is overloaded. Try again in a few seconds.';
+  }
+  return msg;
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+
+document.getElementById('btn-profile').addEventListener('click', () => showProfileModal());
+document.getElementById('btn-apikey').addEventListener('click', () => showApiKeyModal());
+document.getElementById('btn-history').addEventListener('click', () => showHistoryModal());
+document.getElementById('btn-analyze').addEventListener('click', runAnalyze);
+
+document.getElementById('jd').addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    e.preventDefault();
+    runAnalyze();
+  }
+});
+
+document.querySelectorAll('#outputs input').forEach(cb => {
+  cb.addEventListener('change', () => {
+    const prefs = {};
+    document.querySelectorAll('#outputs input').forEach(c => {
+      prefs[c.dataset.output] = c.checked;
+    });
+    store.set(KEYS.outputs, prefs);
+  });
+});
+
+// Restore output preferences
+const savedPrefs = store.get(KEYS.outputs);
+if (savedPrefs) {
+  document.querySelectorAll('#outputs input').forEach(c => {
+    if (typeof savedPrefs[c.dataset.output] === 'boolean') {
+      c.checked = savedPrefs[c.dataset.output];
+    }
+  });
+}
+
+function maybePromptApiKey() {
+  if (!store.get(KEYS.apiKey)) {
+    showApiKeyModal(true);
+  }
+}
+
+// First-run setup
+const profile = store.get(KEYS.profile);
+if (!profile || !profile.resume) {
+  setTimeout(() => showProfileModal(true), 100);
+} else if (!store.get(KEYS.apiKey)) {
+  setTimeout(() => showApiKeyModal(true), 100);
+}
+
+</script>
+</body>
+</html>
